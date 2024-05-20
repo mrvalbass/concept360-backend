@@ -1,15 +1,14 @@
-const mongoose = require('monggose');
+const mongoose = require("monggose");
 
 const exerciceSchema = mongoose.Schema({
-    Title : string,
-	Movement : string,
-	bodyPart : [ string ],
-	Spécialities : [ string ],
-	videoLink : string,
- 	createdBy : {type: mongoose.Schema.Types.ObjectId, ref: 'users'}, //clé étrangère vers users
-	Date : date,
+  title: String,
+  movement: String,
+  bodyPart: [String],
+  specialities: [String],
+  videoLink: String,
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "users" }, //clé étrangère vers users
+  date: Date,
+});
 
-})
-
-const Exercice = mongoose.model('exercices', exerciceSchema);
+const Exercice = mongoose.model("exercices", exerciceSchema);
 module.exports = Exercice;
