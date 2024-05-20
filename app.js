@@ -8,6 +8,7 @@ const fileUpload = require("express-fileupload");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
+const notificationRouter = require("./routes/notification");
 
 const app = express();
 
@@ -23,5 +24,6 @@ app.use(fileUpload());
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/notification", notificationRouter);
 
 module.exports = app;
