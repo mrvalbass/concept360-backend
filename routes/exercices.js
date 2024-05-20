@@ -1,11 +1,12 @@
 var express = require("express");
 var router = express.Router();
+const Exercice = require("../models/exercices");
 
-router.post("/createExercices", (req, res) => {
-  if (!(req.body, ["title", "movement", "specialities", "createdBy"])) {
+router.post("/createExercices", async (req, res) => {
+  if (!(req.body, ["title", "movement", "specialities", "bodyPart"])) {
     res.json({ result: false, error: "Missing or empty fields" });
   } else {
-    const newExercice = new Exercice({
+    const newExercice = await new Exercice({
       title: req.body.title,
       movement: req.body.movement,
       bodyPart: req.body.bodyPart,
@@ -13,10 +14,8 @@ router.post("/createExercices", (req, res) => {
       videoLink: req.body.videoLink,
       createdBy: req.body.createdBy,
       date: Date.now(),
-    });
-    newExercice.save().then((newExercice) => {
-      res.json({ result: true, exercices: newExercice });
-    });
+    }).save();
+    res.json({ result: true, exercices: newExercice });
   }
 });
 
