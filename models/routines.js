@@ -22,7 +22,7 @@ const routineSchema = mongoose.Schema({
           type: mongoose.SchemaTypes.ObjectId,
           ref: "exercices",
         },
-        rep: Number,
+        reps: Number,
         series: Number,
         comment: String,
         done: {
