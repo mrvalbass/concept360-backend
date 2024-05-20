@@ -12,7 +12,19 @@ router.get("/", async (req, res) => {
   res.json({ result: true, user: listUser });
 });
 
-router.get("/:token", async (req, res) => {});
+router.get("/:state", async (req, res) => {
+  try {
+    if (req.params.state === "specialist") {
+      const listSpecialist = await Specialist.find();
+      res.json({ result: true, Specialist: listSpecialist });
+    } else if (req.params.state === "patient") {
+      const listPatient = await Patient.find();
+      res.json({ result: true, Patient: listPatient });
+    }
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
 
 router.post("/signup", async (req, res) => {
   try {
