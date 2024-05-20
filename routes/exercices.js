@@ -2,10 +2,8 @@ var express = require("express");
 var router = express.Router();
 const Exercice = require("../models/exercices");
 
-router.post("/createExercices", async (req, res) => {
-  if (!(req.body, ["title", "movement", "specialities", "bodyPart"])) {
-    res.json({ result: false, error: "Missing or empty fields" });
-  } else {
+router.post("/", async (req, res) => {
+  try {
     const newExercice = await new Exercice({
       title: req.body.title,
       movement: req.body.movement,
@@ -13,13 +11,14 @@ router.post("/createExercices", async (req, res) => {
       specialities: req.body.specialities,
       videoLink: req.body.videoLink,
       createdBy: req.body.createdBy,
-      date: Date.now(),
     }).save();
     res.json({ result: true, exercices: newExercice });
+  } catch (error) {
+    res.json({ result: false, error: error.message });
   }
 });
 
-router.post("/updateExercice/:title", (req, res) => {
+router.post("/:title", (req, res) => {
   const updatedData = req.body;
 
   Exercice.findOneAndUpdate({ Title: req.params.title }, updatedData, {
@@ -32,13 +31,13 @@ router.post("/updateExercice/:title", (req, res) => {
   });
 });
 
-//--------------------------------------- route à compléter -----------------
+//---------------------------------- route à compléter -----------------
 // router.get("/findExercices", (req, res) => {
 //   Exercice.findAll();
 // });
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
-router.delete("/deleteExercices/:tile", (req, res) => {
+router.delete("/:title", (req, res) => {
   Exercice.deleteOne({ title: req.params.title }).then((result) => {
     if (result.deletedCount === 0) {
       return res.json({ result: false, message: "Exercice not found" });
