@@ -9,7 +9,7 @@ const fileUpload = require("express-fileupload");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
-const exerciceRouter = require("./routes/exercices");
+const exercicesRouter = require("./routes/exercices");
 
 const app = express();
 
@@ -25,6 +25,6 @@ app.use(fileUpload());
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use("/exercices", exerciceRouter);
+app.use("/exercices", exercicesRouter);
 
 module.exports = app;

@@ -1,5 +1,5 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const Exercice = require("../models/exercices");
 
 router.post("/", async (req, res) => {
@@ -18,32 +18,79 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/:title", (req, res) => {
-  const updatedData = req.body;
+router.post("/:title", async (req, res) => {
+  try {
+    const newData = req.body;
 
-  Exercice.findOneAndUpdate({ Title: req.params.title }, updatedData, {
-    new: true,
-  }).then((updatedExercice) => {
+    const updatedExercice = await Exercice.findOneAndUpdate(
+      { title: req.params.title },
+      newData,
+      {
+        new: true,
+      }
+    );
     if (!updatedExercice) {
       return res.json({ message: "Exercice not found" });
     }
-    res.json(updatedExercice);
-  });
+    res.json({ result: true, exercices: updatedExercice });
+  } catch (error) {
+    res.json({ result: false, error: error.message });
+  }
 });
 
-//---------------------------------- route à compléter -----------------
-// router.get("/findExercices", (req, res) => {
-//   Exercice.findAll();
+// router.get("/", async (req, res) => {
+//   try {
+//     const data = await Exercice.find({
+//       title: req.body.title,
+//       movement: req.body.movement,
+//       bodyPart: req.body.bodyPart,
+//       specialities: req.body.specialities,
+//       createdBy: req.body.createdBy,
+//     });
+//     if (data.deletedCount === 0) {
+//       return res.json({ result: false, message: "Exercice not found" });
+//     }
+//     res.json({ result: true, data: data });
+//   } catch (error) {
+//     res.json({ result: false, error: error.message });
+//   }
 // });
-//-----------------------------------------------------------------------
 
-router.delete("/:title", (req, res) => {
-  Exercice.deleteOne({ title: req.params.title }).then((result) => {
+// router.get("/", async (req, res) => {
+//   try {
+//     const { title, movement, bodyPart, specialities, createdBy } = req.query;
+
+//     // Créez un objet de filtre basé sur les paramètres fournis
+//     const filter = {};
+//     if (title) filter.title = title;
+//     if (movement) filter.movement = movement;
+//     if (bodyPart) filter.bodyPart = bodyPart;
+//     if (specialities) filter.specialities = specialities;
+//     if (createdBy) filter.createdBy = createdBy;
+
+//     // Effectuez la recherche avec le filtre construit
+//     const data = await Exercice.find(filter);
+
+//     if (data.length === 0) {
+//       return res.json({ result: false, message: "Exercice not found" });
+//     }
+
+//     res.json({ result: true, data: data });
+//   } catch (error) {
+//     res.json({ result: false, error: error.message });
+//   }
+// });
+
+router.delete("/:title", async (req, res) => {
+  try {
+    const result = await Exercice.deleteOne({ title: req.params.title });
     if (result.deletedCount === 0) {
       return res.json({ result: false, message: "Exercice not found" });
     }
     res.json({ result: true, message: "Exercice deleted successfully" });
-  });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
 });
 
 module.exports = router;
