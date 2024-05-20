@@ -16,9 +16,24 @@ const routineSchema = mongoose.Schema({
     required: true,
   },
   exercices: {
-    type: [mongoose.SchemaTypes.ObjectId],
+    type: [
+      {
+        exerciceId: {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: "exercices",
+        },
+        rep: Number,
+        series: Number,
+        comment: String,
+        done: {
+          type: Boolean,
+          default: false,
+        },
+      },
+    ],
     ref: "exercices",
     required: true,
+    _id: false,
   },
   moodStart: {
     type: String,
@@ -34,7 +49,7 @@ const routineSchema = mongoose.Schema({
   },
 });
 
-routineSchema.index({ patient: 1, date: 1 }, { unique: true });
+routineSchema.index({ patient: 1, date: 1, specialist: 1 }, { unique: true });
 
 const Routine = mongoose.model("routines", routineSchema);
 
