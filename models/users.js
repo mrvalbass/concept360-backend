@@ -12,6 +12,7 @@ const userSchema = mongoose.Schema({
     default: () => Date.now(),
   },
   token: String,
+  imageURL: String,
 });
 
 const User = mongoose.model("users", userSchema);

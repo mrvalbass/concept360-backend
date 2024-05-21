@@ -35,6 +35,15 @@ router.get("/state/:state", async (req, res) => {
   }
 });
 
+router.get("/getPatient/:specialistId", async (req, res) => {
+  try {
+    const specialist = await Specialist.findById(req.params.specialistId);
+    res.json({ result: true, listPatient: specialist.patients });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
 router.get("/token/:token", async (req, res) => {
   try {
     if (!req.params.token) throw new Error("no token provided");
