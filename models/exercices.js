@@ -26,7 +26,7 @@ const exerciceSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   }, //clé étrangère vers users
-  date: {
+  creationDate: {
     type: Date,
     default: () => Date.now(),
   },

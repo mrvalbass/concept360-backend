@@ -57,13 +57,13 @@ router.post("/signup", async (req, res) => {
 
     if (req.body.state === "specialist") {
       const newSpecialist = await new Specialist({
-        userId: newUser._id,
+        user: newUser._id,
         discipline: req.body.discipline,
       }).save();
     }
     if (req.body.state === "patient") {
       const newPatient = await new Patient({
-        userId: newUser._id,
+        user: newUser._id,
       }).save();
     }
     res.json({ result: true, token: newUser.token });

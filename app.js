@@ -11,6 +11,8 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const notificationRouter = require("./routes/notifications");
 const exerciceRouter = require("./routes/exercices");
+const routinesRouter = require("./routes/routines");
+const programsRouter = require("./routes/programs");
 
 const app = express();
 
@@ -28,5 +30,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/notifications", notificationRouter);
 app.use("/exercices", exerciceRouter);
+app.use("/routines", routinesRouter);
+app.use("/programs", programsRouter);
 
 module.exports = app;

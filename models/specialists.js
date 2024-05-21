@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const specialistSchema = mongoose.Schema({
-  userId: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
     required: true,
