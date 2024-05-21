@@ -38,48 +38,19 @@ router.post("/:title", async (req, res) => {
   }
 });
 
-// router.get("/", async (req, res) => {
-//   try {
-//     const data = await Exercice.find({
-//       title: req.body.title,
-//       movement: req.body.movement,
-//       bodyPart: req.body.bodyPart,
-//       specialities: req.body.specialities,
-//       createdBy: req.body.createdBy,
-//     });
-//     if (data.deletedCount === 0) {
-//       return res.json({ result: false, message: "Exercice not found" });
-//     }
-//     res.json({ result: true, data: data });
-//   } catch (error) {
-//     res.json({ result: false, error: error.message });
-//   }
-// });
-
-// router.get("/", async (req, res) => {
-//   try {
-//     const { title, movement, bodyPart, specialities, createdBy } = req.query;
-
-//     // Créez un objet de filtre basé sur les paramètres fournis
-//     const filter = {};
-//     if (title) filter.title = title;
-//     if (movement) filter.movement = movement;
-//     if (bodyPart) filter.bodyPart = bodyPart;
-//     if (specialities) filter.specialities = specialities;
-//     if (createdBy) filter.createdBy = createdBy;
-
-//     // Effectuez la recherche avec le filtre construit
-//     const data = await Exercice.find(filter);
-
-//     if (data.length === 0) {
-//       return res.json({ result: false, message: "Exercice not found" });
-//     }
-
-//     res.json({ result: true, data: data });
-//   } catch (error) {
-//     res.json({ result: false, error: error.message });
-//   }
-// });
+// que.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)
+router.get("/filter", async (req, res) => {
+  try {
+    const data = await Exercice.find(req.query);
+    console.log("hello", data, req.body.movement, Exercice);
+    if (data.deletedCount === 0) {
+      return res.json({ result: false, message: "Exercice not found" });
+    }
+    res.json({ result: true, data: data });
+  } catch (error) {
+    res.json({ result: false, error: error.message });
+  }
+});
 
 router.delete("/:title", async (req, res) => {
   try {
