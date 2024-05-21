@@ -11,6 +11,7 @@ router.post("/", async (req, res) => {
       specialities: req.body.specialities,
       videoLink: req.body.videoLink,
       createdBy: req.body.createdBy,
+      freeText: req.body.freeText,
     }).save();
     res.json({ result: true, exercices: newExercice });
   } catch (error) {
