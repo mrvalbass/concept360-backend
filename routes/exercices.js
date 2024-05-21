@@ -38,7 +38,7 @@ router.post("/:title", async (req, res) => {
   }
 });
 
-// que.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)
+// req.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)
 router.get("/filter", async (req, res) => {
   try {
     const data = await Exercice.find(req.query);
