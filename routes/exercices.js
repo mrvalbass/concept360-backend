@@ -1,5 +1,5 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const Exercice = require("../models/exercices");
 
 router.post("/", async (req, res) => {
@@ -18,32 +18,50 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/:title", (req, res) => {
-  const updatedData = req.body;
+router.post("/:title", async (req, res) => {
+  try {
+    const newData = req.body;
 
-  Exercice.findOneAndUpdate({ Title: req.params.title }, updatedData, {
-    new: true,
-  }).then((updatedExercice) => {
+    const updatedExercice = await Exercice.findOneAndUpdate(
+      { title: req.params.title },
+      newData,
+      {
+        new: true,
+      }
+    );
     if (!updatedExercice) {
       return res.json({ message: "Exercice not found" });
     }
-    res.json(updatedExercice);
-  });
+    res.json({ result: true, exercices: updatedExercice });
+  } catch (error) {
+    res.json({ result: false, error: error.message });
+  }
 });
 
-//---------------------------------- route à compléter -----------------
-// router.get("/findExercices", (req, res) => {
-//   Exercice.findAll();
-// });
-//-----------------------------------------------------------------------
+// req.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)
+router.get("/filter", async (req, res) => {
+  try {
+    const data = await Exercice.find(req.query);
+    console.log("hello", data, req.body.movement, Exercice);
+    if (data.deletedCount === 0) {
+      return res.json({ result: false, message: "Exercice not found" });
+    }
+    res.json({ result: true, data: data });
+  } catch (error) {
+    res.json({ result: false, error: error.message });
+  }
+});
 
-router.delete("/:title", (req, res) => {
-  Exercice.deleteOne({ title: req.params.title }).then((result) => {
+router.delete("/:title", async (req, res) => {
+  try {
+    const result = await Exercice.deleteOne({ title: req.params.title });
     if (result.deletedCount === 0) {
       return res.json({ result: false, message: "Exercice not found" });
     }
     res.json({ result: true, message: "Exercice deleted successfully" });
-  });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
 });
 
 module.exports = router;
