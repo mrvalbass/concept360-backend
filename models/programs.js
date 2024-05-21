@@ -1,6 +1,41 @@
 const mongoose = require("mongoose");
 
-const routineSchema = mongoose.Schema({
+const programSubSchema = mongoose.Schema(
+  {
+    date: {
+      type: Date,
+      required: true,
+    },
+    routine: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "routines",
+      required: true,
+      _id: false,
+    },
+    comment: {
+      type: String,
+    },
+    done: {
+      type: Boolean,
+      default: false,
+    },
+    moodStart: {
+      type: String,
+    },
+    moodEnd: {
+      type: String,
+    },
+    personalNotes: {
+      type: String,
+    },
+    sharedNotes: {
+      type: String,
+    },
+  },
+  { _id: false }
+);
+
+const programSchema = mongoose.Schema({
   patient: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "patients",
@@ -11,39 +46,11 @@ const routineSchema = mongoose.Schema({
     ref: "specialists",
     required: true,
   },
-  date: {
-    type: Date,
-    required: true,
-  },
-  routine: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: "routines",
-    required: true,
-    _id: false,
-  },
-  done: {
-    type: Boolean,
-    default: false,
-  },
-  comment: {
-    type: String,
-  },
-  moodStart: {
-    type: String,
-  },
-  moodEnd: {
-    type: String,
-  },
-  personalNotes: {
-    type: String,
-  },
-  sharedNotes: {
-    type: String,
-  },
+  program: [programSubSchema],
 });
 
-routineSchema.index({ patient: 1, date: 1, specialist: 1 }, { unique: true });
+programSchema.index({ patient: 1, date: 1, specialist: 1 }, { unique: true });
 
-const Routine = mongoose.model("routines", routineSchema);
+const Program = mongoose.model("programs", programSchema);
 
-module.exports = Routine;
+module.exports = Program;

@@ -8,12 +8,12 @@ const routineSchema = mongoose.Schema({
   },
   creationDate: {
     type: Date,
-    required: true,
+    default: () => Date.now(),
   },
   exercices: {
     type: [
       {
-        exerciceId: {
+        exercice: {
           type: mongoose.SchemaTypes.ObjectId,
           ref: "exercices",
         },
