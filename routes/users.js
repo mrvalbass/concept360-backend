@@ -12,7 +12,16 @@ router.get("/", async (req, res) => {
   res.json({ result: true, user: listUser });
 });
 
-router.get("/:state", async (req, res) => {
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.json({ result: true, user });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+router.get("/state/:state", async (req, res) => {
   try {
     if (req.params.state === "specialist") {
       const listSpecialist = await Specialist.find();
@@ -21,6 +30,16 @@ router.get("/:state", async (req, res) => {
       const listPatient = await Patient.find();
       res.json({ result: true, Patient: listPatient });
     }
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+router.get("/token/:token", async (req, res) => {
+  try {
+    if (!req.params.token) throw new Error("no token provided");
+    const user = await User.findOne({ token: req.params.token });
+    res.json({ result: true, user });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
