@@ -27,7 +27,7 @@ router.get("/state/:state", async (req, res) => {
       const listSpecialist = await Specialist.find();
       res.json({ result: true, Specialist: listSpecialist });
     } else if (req.params.state === "patient") {
-      const listPatient = await Patient.find();
+      const listPatient = await Patient.find().populate("user");
       res.json({ result: true, Patient: listPatient });
     }
   } catch (err) {
@@ -35,10 +35,15 @@ router.get("/state/:state", async (req, res) => {
   }
 });
 
-router.get("/getPatient/:specialistId", async (req, res) => {
+router.get("/getPatientList/:specialistId", async (req, res) => {
   try {
-    const specialist = await Specialist.findById(req.params.specialistId);
-    res.json({ result: true, listPatient: specialist.patients });
+    const specialist = await Specialist.findById(
+      req.params.specialistId
+    ).populate({
+      path: "patients",
+      populate: "user",
+    });
+    res.json({ result: true, PatientList: specialist.patients });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
@@ -48,7 +53,11 @@ router.get("/token/:token", async (req, res) => {
   try {
     if (!req.params.token) throw new Error("no token provided");
     const user = await User.findOne({ token: req.params.token });
-    res.json({ result: true, user });
+    const specialist = await Specialist.findOne({ user: user._id }).populate(
+      "user"
+    );
+
+    res.json({ result: true, specialist });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
@@ -56,6 +65,7 @@ router.get("/token/:token", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
+    if (!req.body.state) throw new Error("no state provided");
     const newUser = await new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -88,6 +98,22 @@ router.post("/signin", async (req, res) => {
     if (!bcrypt.compareSync(req.body.password, user.password))
       throw new Error("Password is incorrect");
     res.json({ result: true, token: user.token });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+router.post("/addPatient/:specialistId", async (req, res) => {
+  try {
+    await Patient.updateOne(
+      { _id: req.body.patientId },
+      { $push: { specialists: req.params.specialistId } }
+    );
+    await Specialist.updateOne(
+      { _id: req.params.specialistId },
+      { $push: { patients: req.body.patientId } }
+    );
+    res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
