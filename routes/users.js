@@ -123,6 +123,16 @@ router.post("/addPatient/:specialistId", async (req, res) => {
 router.delete("/deletePatient/:specialistId", async (req, res) => {
   try {
     const patientId = new mongoose.Types.ObjectId(`${req.body.patientId}`);
+
+    await Patient.updateOne(
+      {
+        _id: patientId,
+      },
+      {
+        $pull: { specialists: req.params.specialistId },
+      }
+    );
+
     await Specialist.updateOne(
       {
         _id: req.params.specialistId,
@@ -131,6 +141,7 @@ router.delete("/deletePatient/:specialistId", async (req, res) => {
         $pull: { patients: patientId },
       }
     );
+
     res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
