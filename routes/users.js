@@ -86,6 +86,9 @@ router.get("/patients/:specialistId", async (req, res) => {
 router.post("/signup", async (req, res) => {
   try {
     if (!req.body.state) throw new Error("no state provided");
+    const user = await User.findOne({ email: req.body.email });
+    if (user) throw new Error("User already exist");
+
     const newUser = await new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -95,6 +98,7 @@ router.post("/signup", async (req, res) => {
     }).save();
 
     if (req.body.state === "specialist") {
+      if (!req.body.discipline) throw new Error("no discipline provided");
       if (!req.body.discipline) throw new Error("no discipline provided");
       await new Specialist({
         user: newUser._id,
@@ -153,6 +157,7 @@ router.put("/specialists/deletePatient", async (req, res) => {
       { _id: req.body.patientId },
       { $pull: { specialists: req.body.specialistId } }
     );
+
     res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
