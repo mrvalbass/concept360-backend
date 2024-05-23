@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
 });
 
 //Get 1 user by Id
-router.get("/:id", async (req, res) => {
+router.get("/singleUser/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) throw new Error("User not found");
@@ -34,7 +34,7 @@ router.get("/specialists", async (req, res) => {
 });
 
 //Get 1 specialist by Token
-router.get("/specialists/:token", async (req, res) => {
+router.get("/specialists/token/:token", async (req, res) => {
   try {
     const user = await User.findOne({ token: req.params.token });
     const specialist = await Specialist.findOne({ user: user._id }).populate(
@@ -57,7 +57,7 @@ router.get("/patients", async (req, res) => {
 });
 6;
 //Get one patient by Token
-router.get("/patients/:token", async (req, res) => {
+router.get("/patients/token/:token", async (req, res) => {
   try {
     const user = await User.findOne({ token: req.params.token });
     const patient = await Patient.findOne({ user: user._id }).populate("user");
@@ -68,7 +68,7 @@ router.get("/patients/:token", async (req, res) => {
 });
 
 //Get patients linked to one specialist
-router.get("/patients/:specialistId", async (req, res) => {
+router.get("/patients/specialist/:specialistId", async (req, res) => {
   try {
     const specialist = await Specialist.findById(
       req.params.specialistId
