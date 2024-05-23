@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require("../models/users");
 const Specialist = require("../models/specialists");
 const Patient = require("../models/patients");
+const mongoose = require("mongoose");
 
 /* GET users listing. */
 router.get("/", async (req, res) => {
@@ -112,6 +113,23 @@ router.post("/addPatient/:specialistId", async (req, res) => {
     await Specialist.updateOne(
       { _id: req.params.specialistId },
       { $push: { patients: req.body.patientId } }
+    );
+    res.json({ result: true });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+router.delete("/deletePatient/:specialistId", async (req, res) => {
+  try {
+    const patientId = new mongoose.Types.ObjectId(`${req.body.patientId}`);
+    await Specialist.updateOne(
+      {
+        _id: req.params.specialistId,
+      },
+      {
+        $pull: { patients: patientId },
+      }
     );
     res.json({ result: true });
   } catch (err) {
