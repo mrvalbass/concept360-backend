@@ -68,15 +68,15 @@ router.put("/:id/:createExerciceId?", async (req, res) => {
   }
 });
 
-//Route to get the routines based on the filers passed in a query string
+//Route to get the routines based on the filters passed in a query string
 router.get("/", async (req, res) => {
   try {
     const creator = await User.findOne({
       token: req.query.createdBy,
     });
 
-    const userRoutine = await Routine.find({ createdBy: creator._id });
-    res.json({ result: true, userRoutine });
+    const routines = await Routine.find();
+    res.json({ result: true, routines });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
