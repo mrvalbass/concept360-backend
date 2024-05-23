@@ -71,13 +71,14 @@ router.post("/signup", async (req, res) => {
       }).save();
     }
     if (req.body.state === "patient") {
-      const newPatient = await new Patient({
+      console.log(newUser._id);
+      await new Patient({
         user: newUser._id,
       }).save();
     }
     res.json({ result: true, token: newUser.token });
   } catch (err) {
-    res.json({ result: false, error: err.message });
+    res.json({ result: false, error: err });
   }
 });
 
