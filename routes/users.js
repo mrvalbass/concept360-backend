@@ -86,6 +86,9 @@ router.get("/patients/:specialistId", async (req, res) => {
 router.post("/signup", async (req, res) => {
   try {
     if (!req.body.state) throw new Error("no state provided");
+    const user = await User.findOne({ email: req.body.email });
+    if (user) throw new Error("User already exist");
+
     const newUser = await new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -153,6 +156,7 @@ router.put("/specialists/deletePatient", async (req, res) => {
       { _id: req.body.patientId },
       { $pull: { specialists: req.body.specialistId } }
     );
+
     res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
