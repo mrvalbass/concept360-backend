@@ -7,10 +7,9 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const fileUpload = require("express-fileupload");
 
-const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const notificationRouter = require("./routes/notifications");
-const exerciceRouter = require("./routes/exercices");
+const exerciseRouter = require("./routes/exercises");
 const routinesRouter = require("./routes/routines");
 const programsRouter = require("./routes/programs");
 
@@ -26,10 +25,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(fileUpload());
 
-app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/notifications", notificationRouter);
-app.use("/exercices", exerciceRouter);
+app.use("/exercises", exerciseRouter);
 app.use("/routines", routinesRouter);
 app.use("/programs", programsRouter);
 
