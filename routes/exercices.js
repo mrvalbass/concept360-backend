@@ -39,6 +39,14 @@ router.post("/:title", async (req, res) => {
   }
 });
 
+router.get("/exerciceList", (req, res) => {
+  Exercice.find()
+    .populate("createdBy")
+    .then((data) => {
+      res.json({ result: true, exercices: data });
+    });
+});
+
 // req.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)
 router.get("/filter", async (req, res) => {
   try {
