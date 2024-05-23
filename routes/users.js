@@ -57,8 +57,9 @@ router.get("/token/:token", async (req, res) => {
     const specialist = await Specialist.findOne({ user: user._id }).populate(
       "user"
     );
+    const patient = await Patient.findOne({ user: user._id }).populate("user");
 
-    res.json({ result: true, specialist });
+    res.json({ result: true, specialist, patient });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
@@ -67,6 +68,9 @@ router.get("/token/:token", async (req, res) => {
 router.post("/signup", async (req, res) => {
   try {
     if (!req.body.state) throw new Error("no state provided");
+    const user = await User.findOne({ email: req.body.email });
+    if (user) throw new Error("User already exist");
+
     const newUser = await new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -76,6 +80,7 @@ router.post("/signup", async (req, res) => {
     }).save();
 
     if (req.body.state === "specialist") {
+      if (!req.body.discipline) throw new Error("no discipline provided");
       await new Specialist({
         user: newUser._id,
         discipline: req.body.discipline,
