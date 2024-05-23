@@ -11,6 +11,7 @@ router.post("/", async (req, res) => {
       specialities: req.body.specialities,
       videoLink: req.body.videoLink,
       createdBy: req.body.createdBy,
+      freeText: req.body.freeText,
     }).save();
     res.json({ result: true, exercices: newExercice });
   } catch (error) {
@@ -36,6 +37,14 @@ router.post("/:title", async (req, res) => {
   } catch (error) {
     res.json({ result: false, error: error.message });
   }
+});
+
+router.get("/exerciceList", (req, res) => {
+  Exercice.find()
+    .populate("createdBy")
+    .then((data) => {
+      res.json({ result: true, exercices: data });
+    });
 });
 
 // req.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)

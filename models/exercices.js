@@ -30,6 +30,7 @@ const exerciceSchema = mongoose.Schema({
     type: Date,
     default: () => Date.now(),
   },
+  freeText: String,
 });
 
 const Exercice = mongoose.model("exercices", exerciceSchema);
