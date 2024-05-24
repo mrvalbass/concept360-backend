@@ -100,7 +100,6 @@ router.post("/signup", async (req, res) => {
 
     if (req.body.state === "specialist") {
       if (!req.body.discipline) throw new Error("no discipline provided");
-      if (!req.body.discipline) throw new Error("no discipline provided");
       await new Specialist({
         user: newUser._id,
         discipline: req.body.discipline,
