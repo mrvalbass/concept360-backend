@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require("../models/users");
 const Specialist = require("../models/specialists");
 const Patient = require("../models/patients");
+const Program = require("../models/programs");
 
 //Get all users
 router.get("/", async (req, res) => {
@@ -12,8 +13,8 @@ router.get("/", async (req, res) => {
   res.json({ result: true, users });
 });
 
-//Get 1 user by Id
-router.get("/singleUser/:id", async (req, res) => {
+//Get one user by Id
+router.get("/id/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) throw new Error("User not found");
@@ -33,7 +34,7 @@ router.get("/specialists", async (req, res) => {
   }
 });
 
-//Get 1 specialist by Token
+//Get one specialist by Token
 router.get("/specialists/token/:token", async (req, res) => {
   try {
     const user = await User.findOne({ token: req.params.token });
@@ -139,6 +140,11 @@ router.put("/specialists/addPatient", async (req, res) => {
       { _id: req.body.specialistId },
       { $push: { patients: req.body.patientId } }
     );
+    await new Program({
+      patient: req.body.patientId,
+      specialist: req.body.specialistId,
+    }).save();
+
     res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });

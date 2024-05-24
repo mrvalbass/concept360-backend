@@ -44,6 +44,7 @@ const programSchema = mongoose.Schema({
     required: true,
   },
   program: [programRoutineSchema],
+  notes: String,
 });
 
 programSchema.index({ patient: 1, date: 1, specialist: 1 }, { unique: true });
