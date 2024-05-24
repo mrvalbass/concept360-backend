@@ -6,7 +6,6 @@ const User = require("../models/users");
 // req.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)
 
 //Get exercises according to the query string (get all exercises if no query)
-//----------Check how it works with arrays------------//
 router.get("/", async (req, res) => {
   try {
     const exercises = await Exercise.find(req.query).populate("createdBy");

@@ -12,8 +12,8 @@ router.get("/", async (req, res) => {
   res.json({ result: true, users });
 });
 
-//Get 1 user by Id
-router.get("/singleUser/:id", async (req, res) => {
+//Get one user by Id
+router.get("/id/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) throw new Error("User not found");
@@ -33,7 +33,7 @@ router.get("/specialists", async (req, res) => {
   }
 });
 
-//Get 1 specialist by Token
+//Get one specialist by Token
 router.get("/specialists/token/:token", async (req, res) => {
   try {
     const user = await User.findOne({ token: req.params.token });
