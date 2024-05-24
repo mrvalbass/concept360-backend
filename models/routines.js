@@ -1,8 +1,17 @@
 const mongoose = require("mongoose");
 
+const exerciseRoutineSchema = mongoose.Schema({
+  exercise: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "exercises",
+  },
+  reps: Number,
+  sets: Number,
+});
+
 const routineSchema = mongoose.Schema({
   createdBy: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "specialists",
     required: true,
   },
@@ -10,20 +19,9 @@ const routineSchema = mongoose.Schema({
     type: Date,
     default: () => Date.now(),
   },
-  exercices: {
-    type: [
-      {
-        exercice: {
-          type: mongoose.SchemaTypes.ObjectId,
-          ref: "exercices",
-        },
-        reps: Number,
-        series: Number,
-      },
-    ],
-    ref: "exercices",
+  exercises: {
+    type: [exerciseRoutineSchema],
     required: true,
-    _id: false,
   },
 });
 

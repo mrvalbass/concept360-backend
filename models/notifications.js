@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const noticationSchema = mongoose.Schema({
+const notificationSchema = mongoose.Schema({
   createDate: {
     type: Date,
     default: () => Date.now(),
@@ -29,5 +29,5 @@ const noticationSchema = mongoose.Schema({
   },
 });
 
-const Notification = mongoose.model("notification", noticationSchema);
+const Notification = mongoose.model("notification", notificationSchema);
 module.exports = Notification;

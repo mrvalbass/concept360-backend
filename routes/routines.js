@@ -3,7 +3,21 @@ const router = express.Router();
 const Routine = require("../models/routines");
 const User = require("../models/users");
 
-//Route to create a new routine
+//Get routines according to the query string
+router.get("/", async (req, res) => {
+  try {
+    const creator = await User.findOne({
+      token: req.query.createdBy,
+    });
+
+    const routines = await Routine.find();
+    res.json({ result: true, routines });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+//Create a new routine
 router.post("/", async (req, res) => {
   try {
     const creator = await User.findOne({
@@ -12,11 +26,11 @@ router.post("/", async (req, res) => {
 
     const routine = await new Routine({
       createdBy: creator._id,
-      exercices: [
+      exercises: [
         {
-          exercice: req.body.exercice,
+          exercise: req.body.exercise,
+          sets: req.body.sets,
           reps: req.body.reps,
-          series: req.body.series,
         },
       ],
     }).save();
@@ -27,56 +41,69 @@ router.post("/", async (req, res) => {
   }
 });
 
-//Route to update a routine
-//A routine Id is mandatory in params to target the routine to modify
-//An exerciceId in params is optional and must be added if you want to add a new Exercice to the routine
-//The body can contain reps, series, and updateExerciceId
-//updateExerciceId is useful when modifying the reps and sets of an existing exercice in the routine and therefore has no interest if there is an ExerciceId in the params to create a new Exercice.
-router.put("/:id/:createExerciceId?", async (req, res) => {
+//Delete a routine
+router.delete("/", async (req, res) => {
   try {
-    const { reps, series, updateExerciceId } = req.body;
-    const routine = await Routine.findById(req.params.id);
-    const exerciceIdList = routine.exercices.map((exercice) =>
-      exercice.exerciceId.toString()
-    );
-
-    // Add new exercise to routine
-    if (req.params.createExerciceId) {
-      if (!exerciceIdList.includes(req.params.exerciceId)) {
-        routine.exercices.push({
-          exercice: req.params.createExerciceId,
-          reps,
-          series,
-        });
-        await routine.save();
-      } else {
-        throw new Error("Exercice already in routine");
-      }
-    }
-    // Update data relative to one Exercice
-    else {
-      const updateExerciceIndex = exerciceIdList.findIndex(
-        (id) => id === updateExerciceId
-      );
-      routine.exercices[updateExerciceIndex].reps = reps;
-      routine.exercices[updateExerciceIndex].series = series;
-      await routine.save();
-    }
-    res.json({ result: true, routine });
+    await Routine.deleteOne({ _id: req.body.routine });
+    res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
 });
 
-//Route to get the routines based on the filters passed in a query string
-router.get("/", async (req, res) => {
+//Add exercise to a routine
+router.put("/:id/addExercise", async (req, res) => {
   try {
-    const creator = await User.findOne({
-      token: req.query.createdBy,
-    });
+    await Routine.updateOne(
+      { _id: req.params.id },
+      {
+        $push: {
+          exercises: {
+            exercise: req.body.exercise,
+            sets: req.body.sets,
+            reps: req.body.reps,
+          },
+        },
+      }
+    );
 
-    const routines = await Routine.find();
-    res.json({ result: true, routines });
+    res.json({ result: true });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+//Update exercise in a routine
+router.put("/:id/updateExercise", async (req, res) => {
+  try {
+    await Routine.updateOne(
+      {
+        _id: req.params.id,
+        "exercises._id": req.body.routineExercise,
+      },
+      {
+        $set: {
+          "exercises.$.sets": req.body.sets,
+          "exercises.$.reps": req.body.reps,
+        },
+      }
+    );
+
+    res.json({ result: true });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+//Remove exercise from a routine
+router.put("/:id/deleteExercise", async (req, res) => {
+  try {
+    await Routine.updateOne(
+      { _id: req.params.id },
+      { $pull: { exercises: { exercise: req.body.exercise } } }
+    );
+
+    res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
