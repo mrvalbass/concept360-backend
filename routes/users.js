@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require("../models/users");
 const Specialist = require("../models/specialists");
 const Patient = require("../models/patients");
+const Program = require("../models/programs");
 
 //Get all users
 router.get("/", async (req, res) => {
@@ -140,6 +141,11 @@ router.put("/specialists/addPatient", async (req, res) => {
       { _id: req.body.specialistId },
       { $push: { patients: req.body.patientId } }
     );
+    await new Program({
+      patient: req.body.patientId,
+      specialist: req.body.specialistId,
+    }).save();
+
     res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
