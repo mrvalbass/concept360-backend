@@ -61,9 +61,9 @@ router.get("/filter", async (req, res) => {
   }
 });
 
-router.delete("/:title", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    const result = await Exercice.deleteOne({ title: req.params.title });
+    const result = await Exercice.findByIdAndDelete(req.params.id);
     if (result.deletedCount === 0) {
       return res.json({ result: false, message: "Exercice not found" });
     }
