@@ -103,7 +103,7 @@ router.post("/signin", async (req, res) => {
     if (!user) throw new Error("User not found");
     if (!bcrypt.compareSync(req.body.password, user.password))
       throw new Error("Password is incorrect");
-    res.json({ result: true, token: user.token });
+    res.json({ result: true, user });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
