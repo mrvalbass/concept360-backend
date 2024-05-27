@@ -7,9 +7,17 @@ const specialistSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
-  discipline: { type: String, required: true },
+  discipline: {
+    type: String,
+    required: true,
+  },
   lien: String,
-  patients: [{ type: mongoose.Schema.Types.ObjectId, ref: "patients" }],
+  patients: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "patients",
+    },
+  ],
 });
 
 const Specialist = mongoose.model("specialists", specialistSchema);

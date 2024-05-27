@@ -1,18 +1,23 @@
 const mongoose = require("mongoose");
 
-const exerciceSchema = mongoose.Schema({
-  title: { type: String, required: [true, "title missing"], unique: true },
-  movement: { type: String, required: [true, "movement missing"] },
-  bodyPart: {
+const exerciseSchema = mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, "title missing"],
+    unique: true,
+  },
+  movement: {
+    type: String,
+    required: [true, "movement missing"],
+  },
+  bodyParts: {
     type: [String],
     required: true,
     validate: {
-      validator: function (arr) {
-        return arr.length > 0;
-      },
+      validator: (arr) => arr.length > 0,
     },
   },
-  specialities: {
+  disciplines: {
     type: [String],
     required: true,
     validate: {
@@ -25,12 +30,14 @@ const exerciceSchema = mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
+    required: true,
   }, //clé étrangère vers users
   creationDate: {
     type: Date,
     default: () => Date.now(),
   },
+  description: String,
 });
 
-const Exercice = mongoose.model("exercices", exerciceSchema);
-module.exports = Exercice;
+const Exercise = mongoose.model("exercises", exerciseSchema);
+module.exports = Exercise;
