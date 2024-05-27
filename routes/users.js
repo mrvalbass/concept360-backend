@@ -16,6 +16,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+console.log(process.env.CLOUDINARY_API_KEY);
 //Get all users
 router.get("/", async (req, res) => {
   const users = await User.find();
@@ -196,7 +197,7 @@ router.post("/upload", async (req, res) => {
 router.get("/getProfil", async (req, res) => {
   try {
     // Récupérer les photos de profil depuis Cloudinary
-    const profileImages = await cloudinary.v2.uploader
+    const profileImages = await cloudinary.uploader
       .explicit("sample", { type: "image/jpeg" })
       .then((result) => console.log(result));
     res.json({ profileImages });
