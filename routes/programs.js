@@ -62,10 +62,26 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    if (req.body.notes) {
+    if (req.body.notes !== undefined) {
       await Program.findOneAndUpdate(
         { _id: req.params.id },
-        { notes: req.body.notes }
+        {
+          notes: req.body.notes,
+        }
+      );
+    }
+    if (req.body.date) {
+      await Program.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          $push: {
+            program: {
+              date: req.body.date,
+              routine: req.body.routine,
+              comment: req.body.comment,
+            },
+          },
+        }
       );
     }
     res.json({ result: true });
