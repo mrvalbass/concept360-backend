@@ -7,7 +7,12 @@ const patientSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
-  specialists: [{ type: mongoose.Schema.Types.ObjectId, ref: "specialists" }],
+  specialists: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "specialists",
+    },
+  ],
 });
 
 const Patient = mongoose.model("patients", patientSchema);
