@@ -1,5 +1,8 @@
 const express = require("express");
+const cloudinary = require("cloudinary").v2;
 const uid2 = require("uid2");
+const fs = require("fs");
+const uniqid = require("uniqid");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const User = require("../models/users");
@@ -166,6 +169,38 @@ router.put("/specialists/deletePatient", async (req, res) => {
     res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
+  }
+});
+
+router.post("/upload", async (req, res) => {
+  const photoPath = `./tmp/${uniqid()}.jpg`;
+  const resultMove = await req.files.photoFromFront.mv(photoPath);
+
+  if (!resultMove) {
+    const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+    res.json({ result: true, url: resultCloudinary.secure_url });
+  } else {
+    res.json({ result: false, error: resultMove });
+  }
+
+  fs.unlinkSync(photoPath);
+});
+
+router.get("/getProfil", async (req, res) => {
+  try {
+    // Récupérer les photos de profil depuis Cloudinary
+    const profileImages = await cloudinary.v2.uploader
+      .explicit("sample", { type: "image/jpeg" })
+      .then((result) => console.log(result));
+    res.json({ profileImages });
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des photos de profil depuis Cloudinary:",
+      error
+    );
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération des photos de profil" });
   }
 });
 
