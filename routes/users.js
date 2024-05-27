@@ -112,7 +112,7 @@ router.post("/signup", async (req, res) => {
     }
     res.json({ result: true, newUser });
   } catch (err) {
-    res.json({ result: false, error: err.message });
+    res.json({ result: false, error: err });
   }
 });
 
