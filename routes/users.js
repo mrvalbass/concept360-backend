@@ -56,7 +56,7 @@ router.get("/patients", async (req, res) => {
     res.json({ result: false, error: err.message });
   }
 });
-6;
+
 //Get one patient by Token
 router.get("/patients/token/:token", async (req, res) => {
   try {
