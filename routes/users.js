@@ -10,6 +10,12 @@ const Specialist = require("../models/specialists");
 const Patient = require("../models/patients");
 const Program = require("../models/programs");
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 //Get all users
 router.get("/", async (req, res) => {
   const users = await User.find();
