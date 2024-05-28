@@ -179,12 +179,13 @@ router.put("/specialists/deletePatient", async (req, res) => {
 });
 
 router.post("/upload", async (req, res) => {
-  const photoPath = `tmp/${uniqid()}.jpg`;
+  const photoPath = `/tmp/${uniqid()}.jpg`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
   //console.log(req.files.photoFromFront);
   console.log(resultMove);
   if (!resultMove) {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+    console.log("hey", resultCloudinary);
     await User.updateOne(
       { token: req.body.token },
       { profilePictureURL: resultCloudinary.url }
