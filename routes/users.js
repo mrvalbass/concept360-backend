@@ -16,7 +16,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-console.log(process.env.CLOUDINARY_API_KEY);
 //Get all users
 router.get("/", async (req, res) => {
   const users = await User.find();
@@ -180,12 +179,16 @@ router.put("/specialists/deletePatient", async (req, res) => {
 });
 
 router.post("/upload", async (req, res) => {
-  const photoPath = `/tmp/${uniqid()}.jpg`;
+  const photoPath = `./tmp/${uniqid()}.jpg`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
   //console.log(req.files.photoFromFront);
   console.log(resultMove);
   if (!resultMove) {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+    await User.updateOne(
+      { token: req.body.token },
+      { profilePictureURL: resultCloudinary.url }
+    );
     res.json({ result: true, url: resultCloudinary.secure_url });
   } else {
     res.json({ result: false, error: resultMove });
