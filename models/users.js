@@ -24,7 +24,10 @@ const userSchema = mongoose.Schema({
     default: () => Date.now(),
   },
   token: String,
-  profilePictureURL: String,
+  profilePictureURL: {
+    type: String,
+    default: "zebi",
+  },
 });
 
 const User = mongoose.model("users", userSchema);
