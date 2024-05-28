@@ -10,7 +10,8 @@ router.get("/", async (req, res) => {
       token: req.query.createdBy,
     });
 
-    const routines = await Routine.find();
+    const routines = await Routine.find().populate("createdBy");
+    console.log(routines);
     res.json({ result: true, routines });
   } catch (err) {
     res.json({ result: false, error: err.message });

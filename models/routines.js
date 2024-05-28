@@ -12,7 +12,7 @@ const exerciseRoutineSchema = mongoose.Schema({
 const routineSchema = mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "specialists",
+    ref: "users",
     required: true,
   },
   creationDate: {
