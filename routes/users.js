@@ -17,6 +17,7 @@ cloudinary.config({
 });
 
 console.log(process.env.CLOUDINARY_API_KEY);
+
 //Get all users
 router.get("/", async (req, res) => {
   const users = await User.find();
@@ -209,6 +210,22 @@ router.get("/getProfil", async (req, res) => {
     res
       .status(500)
       .json({ error: "Erreur lors de la récupération des photos de profil" });
+  }
+});
+
+//Change data of a specialist
+router.put("/changeData/:specialistId", async (req, res) => {
+  try {
+    const specialist = await Specialist.findById(req.params.specialistId);
+    const user = await User.findOne({ _id: specialist.user });
+    req.body.firstName && (user.firstName = req.body.firstName);
+    req.body.lastName && (user.lastName = req.body.lastName);
+    req.body.email && (user.email = req.body.email);
+    user.save();
+
+    res.json({ result: true, user });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
   }
 });
 
