@@ -34,7 +34,7 @@ router.get("/:patientId", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const specialist = await User.findOne({
-      token: req.body.specialistToken,
+      token: req.body.specialistId,
     });
 
     const programData = await Program.findOne({
@@ -55,6 +55,36 @@ router.post("/", async (req, res) => {
     } else {
       throw new Error("Program already initialized");
     }
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  try {
+    if (req.body.notes !== undefined) {
+      await Program.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          notes: req.body.notes,
+        }
+      );
+    }
+    if (req.body.date) {
+      await Program.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          $push: {
+            program: {
+              date: req.body.date,
+              routine: req.body.routine,
+              comment: req.body.comment,
+            },
+          },
+        }
+      );
+    }
+    res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }

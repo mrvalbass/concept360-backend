@@ -1,10 +1,20 @@
 const express = require("express");
+const cloudinary = require("cloudinary").v2;
 const uid2 = require("uid2");
+const fs = require("fs");
+const uniqid = require("uniqid");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const User = require("../models/users");
 const Specialist = require("../models/specialists");
 const Patient = require("../models/patients");
+const Program = require("../models/programs");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 //Get all users
 router.get("/", async (req, res) => {
@@ -12,8 +22,8 @@ router.get("/", async (req, res) => {
   res.json({ result: true, users });
 });
 
-//Get 1 user by Id
-router.get("/singleUser/:id", async (req, res) => {
+//Get one user by Id
+router.get("/id/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) throw new Error("User not found");
@@ -33,7 +43,7 @@ router.get("/specialists", async (req, res) => {
   }
 });
 
-//Get 1 specialist by Token
+//Get one specialist by Token
 router.get("/specialists/token/:token", async (req, res) => {
   try {
     const user = await User.findOne({ token: req.params.token });
@@ -99,7 +109,6 @@ router.post("/signup", async (req, res) => {
 
     if (req.body.state === "specialist") {
       if (!req.body.discipline) throw new Error("no discipline provided");
-      if (!req.body.discipline) throw new Error("no discipline provided");
       await new Specialist({
         user: newUser._id,
         discipline: req.body.discipline,
@@ -112,7 +121,7 @@ router.post("/signup", async (req, res) => {
     }
     res.json({ result: true, newUser });
   } catch (err) {
-    res.json({ result: false, error: err.message });
+    res.json({ result: false, error: err });
   }
 });
 
@@ -140,6 +149,11 @@ router.put("/specialists/addPatient", async (req, res) => {
       { _id: req.body.specialistId },
       { $push: { patients: req.body.patientId } }
     );
+    await new Program({
+      patient: req.body.patientId,
+      specialist: req.body.specialistId,
+    }).save();
+
     res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
@@ -161,6 +175,43 @@ router.put("/specialists/deletePatient", async (req, res) => {
     res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
+  }
+});
+
+router.post("/upload", async (req, res) => {
+  const photoPath = `tmp/${uniqid()}.jpg`;
+  const resultMove = await req.files.photoFromFront.mv(photoPath);
+  //console.log(req.files.photoFromFront);
+  console.log(resultMove);
+  if (!resultMove) {
+    const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+    await User.updateOne(
+      { token: req.body.token },
+      { profilePictureURL: resultCloudinary.url }
+    );
+    res.json({ result: true, url: resultCloudinary.secure_url });
+  } else {
+    res.json({ result: false, error: resultMove });
+  }
+
+  fs.unlinkSync(photoPath);
+});
+
+router.get("/getProfil", async (req, res) => {
+  try {
+    // Récupérer les photos de profil depuis Cloudinary
+    const profileImages = await cloudinary.uploader
+      .explicit("sample", { type: "image/jpeg" })
+      .then((result) => console.log(result));
+    res.json({ profileImages });
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des photos de profil depuis Cloudinary:",
+      error
+    );
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération des photos de profil" });
   }
 });
 
