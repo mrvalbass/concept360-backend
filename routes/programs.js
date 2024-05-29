@@ -10,8 +10,8 @@ const moment = require("moment");
 router.get("/user/:userId/:date", async (req, res) => {
   try {
     const patient = await Patient.findOne({ user: req.params.userId });
-    console.log(patient);
-    const userProgram = await Program.findOne({
+
+    const userPrograms = await Program.find({
       patient: patient._id,
     })
       .populate({
@@ -31,11 +31,14 @@ router.get("/user/:userId/:date", async (req, res) => {
         select: "-_id",
       });
 
-    userProgram.program = userProgram.program.filter((programRoutine) => {
-      return moment(programRoutine.date).unix() === +req.params.date;
-    });
+    userPrograms.map(
+      (userProgram) =>
+        (userProgram.program = userProgram.program.filter((programRoutine) => {
+          return moment(programRoutine.date).unix() === +req.params.date;
+        }))
+    );
 
-    res.json({ result: true, userProgram });
+    res.json({ result: true, userPrograms });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
