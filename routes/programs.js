@@ -6,6 +6,35 @@ const Patient = require("../models/patients");
 
 //Get a patient program
 
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const patient = await Patient.findOne({ user: req.params.userId });
+    console.log(patient);
+    const userProgram = await Program.findOne({
+      patient: patient._id,
+    })
+      .populate({
+        path: "patient",
+        populate: {
+          path: "user",
+          select: "-_id firstName lastName email createdAt",
+        },
+        select: "-_id user",
+      })
+      .populate({
+        path: "program.routine",
+        populate: {
+          path: "exercises.exercise",
+          select: "-_id",
+        },
+        select: "-_id",
+      });
+    res.json({ result: true, userProgram });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
 router.get("/:specialistId/:patientId", async (req, res) => {
   try {
     const userProgram = await Program.findOne({
@@ -27,35 +56,6 @@ router.get("/:specialistId/:patientId", async (req, res) => {
         },
       });
     if (!userProgram) throw new Error("Program not found");
-    res.json({ result: true, userProgram });
-  } catch (err) {
-    res.json({ result: false, error: err.message });
-  }
-});
-
-router.get("/user/:userId", async (req, res) => {
-  try {
-    const patient = await Patient.findOne({ user: req.params.userId });
-
-    const userProgram = await Program.findOne({
-      patient: patient._id,
-    })
-      .populate({
-        path: "patient",
-        populate: {
-          path: "user",
-          select: "-_id firstName lastName email createdAt",
-        },
-        select: "-_id user",
-      })
-      .populate({
-        path: "program.routine",
-        populate: {
-          path: "exercises.exercise",
-          select: "-_id",
-        },
-        select: "-_id",
-      });
     res.json({ result: true, userProgram });
   } catch (err) {
     res.json({ result: false, error: err.message });
