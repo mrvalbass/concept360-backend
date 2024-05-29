@@ -43,7 +43,6 @@ router.get("/:user", async (req, res) => {
 // route pour supprimer une seule notification à l'icon prévus
 
 router.delete("/deleteOneNotif/:id", async (req, res) => {
-  console.log("req is", req.params.id);
   try {
     const deleteResult = await Notification.deleteOne({ _id: req.params.id });
 
@@ -61,14 +60,12 @@ router.delete("/deleteOneNotif/:id", async (req, res) => {
 router.delete("/deleteManyNotif", async (req, res) => {
   try {
     const receiver = await User.findOne({ token: req.body.receiverToken });
-    console.log("receiver ", receiver);
 
     if (!receiver) {
       return res.status(404).json({ results: false, error: "User not found" });
     }
 
     const result = await Notification.deleteMany({ receiver: receiver._id });
-    console.log("is ", receiver._id);
     res.json({ result: result });
   } catch (error) {
     res.status(500).json({ results: false, error: error.message });

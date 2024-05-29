@@ -5,10 +5,12 @@ const User = require("../models/users");
 const Patient = require("../models/patients");
 
 //Get a patient program
-router.get("/patient/:patientId", async (req, res) => {
+
+router.get("/:specialistId/:patientId", async (req, res) => {
   try {
     const userProgram = await Program.findOne({
       patient: req.params.patientId,
+      specialist: req.params.specialistId,
     })
       .populate({
         path: "patient",
@@ -22,10 +24,9 @@ router.get("/patient/:patientId", async (req, res) => {
         path: "program.routine",
         populate: {
           path: "exercises.exercise",
-          select: "-_id",
         },
-        select: "-_id",
       });
+    if (!userProgram) throw new Error("Program not found");
     res.json({ result: true, userProgram });
   } catch (err) {
     res.json({ result: false, error: err.message });
@@ -90,31 +91,65 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/saveNotes/:id", async (req, res) => {
   try {
-    if (req.body.notes !== undefined) {
-      await Program.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-          notes: req.body.notes,
-        }
-      );
-    }
-    if (req.body.date) {
-      await Program.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-          $push: {
-            program: {
-              date: req.body.date,
-              routine: req.body.routine,
-              comment: req.body.comment,
-            },
+    const program = await Program.findOneAndUpdate(
+      { _id: req.params.id },
+      { notes: req.body.notes }
+    );
+    res.json({ result: true, program });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+router.put("/addRoutine/:id", async (req, res) => {
+  try {
+    const program = await Program.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $push: {
+          program: {
+            date: req.body.date,
+            routine: req.body.routine,
+            comment: req.body.comment,
           },
-        }
-      );
-    }
-    res.json({ result: true });
+        },
+      }
+    );
+    res.json({ result: true, program });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+router.put("/deleteRoutine/:id", async (req, res) => {
+  try {
+    const program = await Program.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $pull: {
+          program: {
+            _id: req.body.programRoutine,
+          },
+        },
+      },
+      { new: true }
+    );
+    res.json({ result: true, program });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+router.put("/toggleDone/:id", async (req, res) => {
+  try {
+    const program = await Program.findOneAndUpdate(
+      { _id: req.params.id, "program._id": req.body.programRoutine },
+      { $set: { "program.$.done": req.body.done } },
+      { new: true }
+    );
+    res.json({ result: true, program });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
