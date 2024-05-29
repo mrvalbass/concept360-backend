@@ -214,17 +214,26 @@ router.get("/getProfil", async (req, res) => {
   }
 });
 
-//Change data of a specialist
-router.put("/changeData/:specialistId", async (req, res) => {
+//Change data of a user
+router.put("/changeData/:userId", async (req, res) => {
   try {
-    const specialist = await Specialist.findById(req.params.specialistId);
-    const user = await User.findOne({ _id: specialist.user });
-    req.body.firstName && (user.firstName = req.body.firstName);
-    req.body.lastName && (user.lastName = req.body.lastName);
-    req.body.email && (user.email = req.body.email);
-    user.save();
+    const user = await User.findOne({ _id: req.params.userId });
+    if (req.body.password) {
+      if (!bcrypt.compareSync(req.body.password, user.password)) {
+        throw new Error("Password is incorrect");
+      } else {
+        user.password = bcrypt.hashSync(req.body.newPassword, 10);
+        user.save();
+        res.json({ result: true, user });
+      }
+    } else {
+      req.body.firstName && (user.firstName = req.body.firstName);
+      req.body.lastName && (user.lastName = req.body.lastName);
+      req.body.email && (user.email = req.body.email);
+      user.save();
 
-    res.json({ result: true, user });
+      res.json({ result: true, user });
+    }
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
