@@ -15,10 +15,10 @@ router.get("/user/:userId/:date", async (req, res) => {
       patient: patient._id,
     })
       .populate({
-        path: "patient",
+        path: "specialist",
         populate: {
           path: "user",
-          select: "-_id firstName lastName email createdAt",
+          select: "-_id firstName lastName",
         },
         select: "-_id user",
       })
@@ -30,9 +30,11 @@ router.get("/user/:userId/:date", async (req, res) => {
         },
         select: "-_id",
       });
+
     userProgram.program = userProgram.program.filter((programRoutine) => {
       return moment(programRoutine.date).unix() === +req.params.date;
     });
+
     res.json({ result: true, userProgram });
   } catch (err) {
     res.json({ result: false, error: err.message });
