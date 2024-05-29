@@ -26,7 +26,8 @@ const userSchema = mongoose.Schema({
   token: String,
   profilePictureURL: {
     type: String,
-    default: "zebi",
+    default:
+      "https://res.cloudinary.com/dlrwpjznf/image/upload/v1716969994/adfslha71z4u1xova1jm.png",
   },
 });
 
