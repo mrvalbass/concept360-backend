@@ -3,10 +3,11 @@ const router = express.Router();
 const Program = require("../models/programs");
 const User = require("../models/users");
 const Patient = require("../models/patients");
+const moment = require("moment");
 
 //Get a patient program
 
-router.get("/user/:userId", async (req, res) => {
+router.get("/user/:userId/:date", async (req, res) => {
   try {
     const patient = await Patient.findOne({ user: req.params.userId });
     console.log(patient);
@@ -29,6 +30,9 @@ router.get("/user/:userId", async (req, res) => {
         },
         select: "-_id",
       });
+    userProgram.program = userProgram.program.filter((programRoutine) => {
+      return moment(programRoutine.date).unix() === +req.params.date;
+    });
     res.json({ result: true, userProgram });
   } catch (err) {
     res.json({ result: false, error: err.message });
