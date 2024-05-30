@@ -183,7 +183,6 @@ router.post("/upload", async (req, res) => {
   const resultMove = await req.files.photoFromFront.mv(photoPath);
   if (!resultMove) {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
-    console.log("hey", resultCloudinary);
     await User.updateOne(
       { token: req.body.token },
       { profilePictureURL: resultCloudinary.url }
