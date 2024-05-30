@@ -59,14 +59,18 @@ router.put("/:id", async (req, res) => {
 //Delete an exercise
 router.delete("/:id", async (req, res) => {
   try {
+    //Remove exercise from all routines that contains it
     await Routine.updateMany(
       {},
       {
         $pull: { exercises: { exercise: req.params.id } },
       }
     );
-
+    //Remove empty routines
+    await Routine.deleteMany({ exercises: { $size: 0 } });
+    //Delete exercice once it's not used anymore
     const result = await Exercise.deleteOne({ _id: req.params.id });
+
     if (result.deletedCount === 0) throw new Error("Exercise not found");
     res.json({ result: true, message: "Exercise deleted successfully" });
   } catch (err) {
