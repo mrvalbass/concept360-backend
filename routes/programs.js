@@ -6,7 +6,6 @@ const Patient = require("../models/patients");
 const moment = require("moment");
 
 //Get a patient program
-
 router.get("/user/:userId/:date", async (req, res) => {
   try {
     const patient = await Patient.findOne({ user: req.params.userId });

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Routine = require("../models/routines");
 const User = require("../models/users");
+const Program = require("../models/programs");
 
 //Get routines according to the query string
 router.get("/", async (req, res) => {
@@ -38,8 +39,32 @@ router.post("/", async (req, res) => {
 //Delete a routine
 router.delete("/", async (req, res) => {
   try {
+    await Program.updateMany(
+      {},
+      {
+        $pull: { program: { routine: req.body.routine } },
+      }
+    );
+    //Delete routine once it's not used anymore
     await Routine.deleteOne({ _id: req.body.routine });
     res.json({ result: true });
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+//Update an existing routine
+router.put("/:id/updateRoutine", async (req, res) => {
+  try {
+    const routine = await Routine.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        exercises: req.body.exercises,
+      },
+      { new: true }
+    );
+
+    res.json({ result: true, routine });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
