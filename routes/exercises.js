@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Exercise = require("../models/exercises");
 const User = require("../models/users");
+const Routine = require("../models/routines");
 
 // req.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)
 
@@ -58,6 +59,13 @@ router.put("/:id", async (req, res) => {
 //Delete an exercise
 router.delete("/:id", async (req, res) => {
   try {
+    await Routine.updateMany(
+      {},
+      {
+        $pull: { exercises: { exercise: req.params.id } },
+      }
+    );
+
     const result = await Exercise.deleteOne({ _id: req.params.id });
     if (result.deletedCount === 0) throw new Error("Exercise not found");
     res.json({ result: true, message: "Exercise deleted successfully" });
