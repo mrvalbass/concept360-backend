@@ -18,7 +18,7 @@ router.get("/user/:userId/:date", async (req, res) => {
         path: "specialist",
         populate: {
           path: "user",
-          select: "-_id firstName lastName",
+          select: "-_id -password -token",
         },
         select: "-_id user",
       })
@@ -54,7 +54,7 @@ router.get("/:specialistId/:patientId", async (req, res) => {
         path: "patient",
         populate: {
           path: "user",
-          select: "-_id firstName lastName email createdAt",
+          select: "-_id -password -token",
         },
         select: "-_id user",
       })
