@@ -3,6 +3,7 @@ const router = express.Router();
 const Exercise = require("../models/exercises");
 const User = require("../models/users");
 const Routine = require("../models/routines");
+const Program = require("../models/programs");
 
 // req.query qui fonctionne grace au front (gérer les filters dans le front, permet de faire évoluer la plateforme)
 
@@ -65,6 +66,15 @@ router.delete("/:id", async (req, res) => {
       {
         $pull: { exercises: { exercise: req.params.id } },
       }
+    );
+    //Remove empty routines from Programs
+    const emptyRoutines = await Routine.find({ exercises: { $size: 0 } });
+    emptyRoutines.map(
+      async (routine) =>
+        await Program.updateMany(
+          {},
+          { $pull: { program: { routine: routine._id } } }
+        )
     );
     //Remove empty routines
     await Routine.deleteMany({ exercises: { $size: 0 } });
