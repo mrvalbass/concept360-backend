@@ -11,6 +11,7 @@ const Program = require("../models/programs");
 router.get("/", async (req, res) => {
   try {
     const exercises = await Exercise.find(req.query).populate("createdBy");
+    if (!exercises) throw new Error("No exercices found");
     res.json({ result: true, exercises });
   } catch (err) {
     res.json({ result: false, error: err.message });

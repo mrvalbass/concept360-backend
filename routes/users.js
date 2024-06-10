@@ -50,6 +50,7 @@ router.get("/specialists/token/:token", async (req, res) => {
     const specialist = await Specialist.findOne({ user: user._id }).populate(
       "user"
     );
+    if (!user || !specialist) throw new Error("Specialist not found");
     res.json({ result: true, specialist });
   } catch (err) {
     res.json({ result: false, error: err.message });
@@ -71,6 +72,7 @@ router.get("/patients/token/:token", async (req, res) => {
   try {
     const user = await User.findOne({ token: req.params.token });
     const patient = await Patient.findOne({ user: user._id }).populate("user");
+    if (!user || !patient) throw new Error("Specialist not found");
     res.json({ result: true, patient });
   } catch (err) {
     res.json({ result: false, error: err.message });
@@ -86,6 +88,7 @@ router.get("/patients/specialist/:specialistId", async (req, res) => {
       path: "patients",
       populate: "user",
     });
+    if (!specialist) throw new Error("Specialist not found");
     res.json({ result: true, patients: specialist.patients });
   } catch (err) {
     res.json({ result: false, error: err.message });
@@ -193,24 +196,6 @@ router.post("/upload", async (req, res) => {
   }
 
   fs.unlinkSync(photoPath);
-});
-
-router.get("/getProfil", async (req, res) => {
-  try {
-    // Récupérer les photos de profil depuis Cloudinary
-    const profileImages = await cloudinary.uploader
-      .explicit("sample", { type: "image/jpeg" })
-      .then((result) => console.log(result));
-    res.json({ profileImages });
-  } catch (error) {
-    console.error(
-      "Erreur lors de la récupération des photos de profil depuis Cloudinary:",
-      error
-    );
-    res
-      .status(500)
-      .json({ error: "Erreur lors de la récupération des photos de profil" });
-  }
 });
 
 //Change data of a user
