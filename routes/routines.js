@@ -4,13 +4,9 @@ const Routine = require("../models/routines");
 const User = require("../models/users");
 const Program = require("../models/programs");
 
-//Get routines according to the query string
+//Get routines
 router.get("/", async (req, res) => {
   try {
-    const creator = await User.findOne({
-      token: req.query.createdBy,
-    });
-
     const routines = await Routine.find().populate("exercises.exercise");
     res.json({ result: true, routines });
   } catch (err) {
@@ -65,28 +61,6 @@ router.put("/:id/updateRoutine", async (req, res) => {
     );
 
     res.json({ result: true, routine });
-  } catch (err) {
-    res.json({ result: false, error: err.message });
-  }
-});
-
-//Add exercise to a routine
-router.put("/:id/addExercise", async (req, res) => {
-  try {
-    await Routine.updateOne(
-      { _id: req.params.id },
-      {
-        $push: {
-          exercises: {
-            exercise: req.body.exercise,
-            sets: req.body.sets,
-            reps: req.body.reps,
-          },
-        },
-      }
-    );
-
-    res.json({ result: true });
   } catch (err) {
     res.json({ result: false, error: err.message });
   }
